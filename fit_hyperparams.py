@@ -35,7 +35,7 @@ def model(X_train, Y_train, X_val, Y_val, caseEmbeddings, wordEmbeddings, label2
         Conv1D(kernel_size={{choice([3, 4, 5, 6, 7])}}, filters=30, padding='same',
                activation={{choice(['tanh', 'relu', 'sigmoid'])}}, strides=1),
         name="Convolution")(dropout)
-    maxpool_out = TimeDistributed(MaxPooling1D(52), name="maxpool")(conv1d_out)
+    maxpool_out = TimeDistributed(MaxPooling1D(words_maxlen), name="maxpool")(conv1d_out)
     char = TimeDistributed(Flatten(), name="Flatten")(maxpool_out)
     char = Dropout({{uniform(0, 1)}})(char)
 
