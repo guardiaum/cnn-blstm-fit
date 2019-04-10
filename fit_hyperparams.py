@@ -14,8 +14,8 @@ def model(X_train, Y_train, X_val, Y_val, caseEmbeddings, wordEmbeddings, label2
 
     print("sentences maxlen: %s" % sentences_maxlen)
     print("words maxlen: %s" % words_maxlen)
-    print("wordEmbeddings: %s" % wordEmbeddings.shape)
-    print("caseEmbeddings: %s" % caseEmbeddings.shape)
+    print("wordEmbeddings: (%s, %s)" % wordEmbeddings.shape)
+    print("caseEmbeddings: (%s, %s)" % caseEmbeddings.shape)
 
     """Model layers"""
 

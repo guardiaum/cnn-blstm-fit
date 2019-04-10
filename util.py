@@ -213,7 +213,7 @@ def create_matrices(sentences, word2Idx, label2Idx, case2Idx, char2Idx):
 
     dataset = []
 
-    sentences_maxlen = 1000
+    sentences_maxlen = 1200
     for sentence in sentences:
         wordcount = 0
         for word, char, label in sentence:
