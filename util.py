@@ -270,4 +270,4 @@ def create_matrices(sentences, word2Idx, label2Idx, case2Idx, char2Idx):
     for i, sentence in enumerate(dataset):
         dataset[i][2] = pad_sequences(dataset[i][2], words_maxlen, padding='post')
 
-    return dataset
+    return dataset, sentences_maxlen, words_maxlen
