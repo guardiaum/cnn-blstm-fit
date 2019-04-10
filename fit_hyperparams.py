@@ -8,18 +8,23 @@ from hyperas.distributions import choice, uniform
 from util import *
 
 
-def model(X_train, Y_train, X_val, Y_val, caseEmbeddings, wordEmbeddings, char2Idx, label2Idx):
+def model(X_train, Y_train, X_val, Y_val, caseEmbeddings, wordEmbeddings, label2Idx, sentences_maxlen, words_maxlen):
 
     lstm_state_size = 275
+
+    print("sentences maxlen: %s" % sentences_maxlen)
+    print("words maxlen: %s" % words_maxlen)
+    print("wordEmbeddings: %s" % wordEmbeddings.shape)
+    print("caseEmbeddings: %s" % caseEmbeddings.shape)
 
     """Model layers"""
 
     # character input
-    character_input = Input(shape=(None, len(char2Idx), ), name="Character_input")
+    character_input = Input(shape=(None, words_maxlen, ), name="Character_input")
 
     # embedding -> Size of input dimension based on dictionary, output dimension
     embed_char_out = TimeDistributed(
-        Embedding(len(char2Idx), 30, embeddings_initializer=RandomUniform(minval=-0.5, maxval=0.5)),
+        Embedding(words_maxlen, 30, embeddings_initializer=RandomUniform(minval=-0.5, maxval=0.5)),
         name="Character_embedding")(
         character_input)
 
@@ -81,11 +86,13 @@ def model(X_train, Y_train, X_val, Y_val, caseEmbeddings, wordEmbeddings, char2I
 
 def data():
     val_data, case2Idx_val, caseEmbeddings_val, word2Idx_val, \
-    wordEmbeddings_val, char2Idx_val, label2Idx_val = prepare_data(get_val_data())
-    train_data, case2Idx, caseEmbeddings, word2Idx, wordEmbeddings, char2Idx, label2Idx = prepare_data(get_train_data())
+    wordEmbeddings_val, char2Idx_val, label2Idx_val, sentences_maxlen, words_maxlen = prepare_data(get_val_data())
+
+    train_data, case2Idx, caseEmbeddings, word2Idx, wordEmbeddings, \
+    char2Idx, label2Idx, sentences_maxlen, words_maxlen = prepare_data(get_train_data())
 
     X_train, Y_train, X_val, Y_val = split_data(train_data, val_data)
-    return X_train, Y_train, X_val, Y_val, caseEmbeddings, wordEmbeddings, char2Idx, label2Idx
+    return X_train, Y_train, X_val, Y_val, caseEmbeddings, wordEmbeddings, label2Idx, sentences_maxlen, words_maxlen
 
 best_run, best_model = optim.minimize(model=model,
                                           data=data,

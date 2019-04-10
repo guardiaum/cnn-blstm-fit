@@ -130,12 +130,12 @@ def embed(sentences):
     case2Idx, caseEmbeddings, word2Idx, wordEmbeddings, char2Idx, label2Idx = define_dicts(words)
 
     # format: [[wordindices], [label indices], [caseindices], [padded word indices]]
-    data = padding(create_matrices(sentences, word2Idx, label2Idx, case2Idx, char2Idx))
+    data, sentences_maxlen, words_maxlen = create_matrices(sentences, word2Idx, label2Idx, case2Idx, char2Idx)
 
     # idx2Word = {v: k for k, v in word2Idx.items()}
     # idx2Label = {v: k for k, v in label2Idx.items()}
 
-    return data, case2Idx, caseEmbeddings, word2Idx, wordEmbeddings, char2Idx, label2Idx
+    return data, case2Idx, caseEmbeddings, word2Idx, wordEmbeddings, char2Idx, label2Idx, sentences_maxlen, words_maxlen
 
 
 '''
@@ -213,12 +213,16 @@ def create_matrices(sentences, word2Idx, label2Idx, case2Idx, char2Idx):
 
     dataset = []
 
-    maxlen = 1200
+    sentences_maxlen = 1000
     for sentence in sentences:
         wordcount = 0
         for word, char, label in sentence:
             wordcount += 1
-        maxlen = max(maxlen, wordcount)
+        sentences_maxlen = max(sentences_maxlen, wordcount)
+
+    print("sentence maxlen: %s" % sentences_maxlen)
+
+    '''PADDING FOR SENTENCES AND EMBED OF WORDS, WORD CASEING AND CHARACTERS'''
 
     for sentence in sentences:
         wordIndices = []
@@ -242,34 +246,28 @@ def create_matrices(sentences, word2Idx, label2Idx, case2Idx, char2Idx):
                     charIdx.append(char2Idx[x])
 
             wordIndices.append(wordIdx)
-            charIndices.append(charIdx)
             caseIndices.append(get_casing(word, case2Idx))
+            charIndices.append(charIdx)
             labelIndices.append(label2Idx[label])
 
-        while len(wordIndices) < maxlen:
+        while len(wordIndices) < sentences_maxlen:
             wordIndices.append(paddingIdx)
-        while len(caseIndices) < maxlen:
+        while len(caseIndices) < sentences_maxlen:
             caseIndices.append(case2Idx['PADDING_TOKEN'])
-        while len(charIndices) < maxlen:
+        while len(charIndices) < sentences_maxlen:
             charIndices.append([char2Idx['PADDING']])
 
         dataset.append([wordIndices, caseIndices, charIndices, labelIndices])
 
-    print("sentence maxlen: %s" % maxlen)
-
-    return dataset
-
-
-def padding(sentences_matrix):
-
-    maxlen = 52
-    for sentence in sentences_matrix:
+    words_maxlen = 50
+    for sentence in dataset:
         char = sentence[2]
         for x in char:
-            maxlen = max(maxlen, len(x))
+            words_maxlen = max(words_maxlen, len(x))
+    print("words maxlen: %s" % words_maxlen)
 
-    for i, sentence in enumerate(sentences_matrix):
-        sentences_matrix[i][2] = pad_sequences(sentences_matrix[i][2], maxlen, padding='post')
+    '''PADDING FOR CHARACTERS'''
+    for i, sentence in enumerate(dataset):
+        dataset[i][2] = pad_sequences(dataset[i][2], words_maxlen, padding='post')
 
-    print("maxlen: %s" % maxlen)
-    return sentences_matrix
+    return dataset
