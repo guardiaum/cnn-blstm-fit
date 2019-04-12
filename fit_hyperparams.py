@@ -20,11 +20,11 @@ def model(X_train, Y_train, X_val, Y_val, caseEmbeddings, wordEmbeddings, label2
     """Model layers"""
 
     # character input
-    character_input = Input(shape=(None, words_maxlen, ), name="Character_input")
+    character_input = Input(shape=(sentences_maxlen, words_maxlen,), name="Character_input")
 
     # embedding -> Size of input dimension based on dictionary, output dimension
     embed_char_out = TimeDistributed(
-        Embedding(words_maxlen, 30, embeddings_initializer=RandomUniform(minval=-0.5, maxval=0.5)),
+        Embedding(words_maxlen, 50, embeddings_initializer=RandomUniform(minval=-0.5, maxval=0.5)),
         name="Character_embedding")(
         character_input)
 
@@ -32,7 +32,7 @@ def model(X_train, Y_train, X_val, Y_val, caseEmbeddings, wordEmbeddings, label2
 
     # CNN
     conv1d_out = TimeDistributed(
-        Conv1D(kernel_size={{choice([3, 4, 5, 6, 7])}}, filters=30, padding='same',
+        Conv1D(kernel_size={{choice([3, 4, 5, 6, 7])}}, filters=50, padding='same',
                activation={{choice(['tanh', 'relu', 'sigmoid'])}}, strides=1),
         name="Convolution")(dropout)
     maxpool_out = TimeDistributed(MaxPooling1D(words_maxlen), name="maxpool")(conv1d_out)
