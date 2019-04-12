@@ -20,7 +20,7 @@ def model(X_train, Y_train, X_val, Y_val, caseEmbeddings, wordEmbeddings, label2
     """Model layers"""
 
     # character input
-    character_input = Input(shape=(sentences_maxlen, words_maxlen,), name="Character_input")
+    character_input = Input(shape=(None, sentences_maxlen, words_maxlen), name="Character_input")
 
     # embedding -> Size of input dimension based on dictionary, output dimension
     embed_char_out = TimeDistributed(
