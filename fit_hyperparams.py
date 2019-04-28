@@ -8,7 +8,7 @@ from hyperas.distributions import choice, uniform
 from util import *
 
 
-def model(X_train, Y_train, X_val, Y_val, caseEmbeddings, wordEmbeddings, label2Idx, sentences_maxlen, words_maxlen):
+def model(X_train, Y_train, X_val, Y_val, caseEmbeddings, wordEmbeddings, label2Idx, char2idx, sentences_maxlen, words_maxlen):
 
     lstm_state_size = 275
 
@@ -24,7 +24,7 @@ def model(X_train, Y_train, X_val, Y_val, caseEmbeddings, wordEmbeddings, label2
 
     # embedding -> Size of input dimension based on dictionary, output dimension
     embed_char_out = TimeDistributed(
-        Embedding(words_maxlen, 30, embeddings_initializer=RandomUniform(minval=-0.5, maxval=0.5)),
+        Embedding(len(char2idx), 30, embeddings_initializer=RandomUniform(minval=-0.5, maxval=0.5)),
         name="Character_embedding")(
         character_input)
 
@@ -92,7 +92,7 @@ def data():
     char2Idx, label2Idx, sentences_maxlen, words_maxlen = prepare_data(get_train_data())
 
     X_train, Y_train, X_val, Y_val = split_data(train_data, val_data)
-    return X_train, Y_train, X_val, Y_val, caseEmbeddings, wordEmbeddings, label2Idx, sentences_maxlen, words_maxlen
+    return X_train, Y_train, X_val, Y_val, caseEmbeddings, wordEmbeddings, label2Idx, char2Idx, sentences_maxlen, words_maxlen
 
 best_run, best_model = optim.minimize(model=model,
                                           data=data,
