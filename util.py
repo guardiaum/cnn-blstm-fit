@@ -76,8 +76,8 @@ def define_dicts(words):
     # mapping for token cases
     case2Idx = {'numeric': 0, 'allLower': 1, 'allUpper': 2, 'initialUpper': 3, 'other': 4, 'mainly_numeric': 5,
                 'contains_digit': 6, 'PADDING_TOKEN': 7}
-    caseEmbeddings = np.identity(50, dtype='float32')  # identity matrix used
-    caseEmbeddings = caseEmbeddings[0:8]
+    caseEmbeddings = np.identity(len(case2Idx), dtype='float32')  # identity matrix used
+    #caseEmbeddings = caseEmbeddings[0:8]
 
     # read GLoVE word embeddings
     word2Idx = {}
